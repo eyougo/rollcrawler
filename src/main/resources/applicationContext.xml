@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	<!-- 配置文件 -->
+	<bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>classpath:config.properties</value>
+		</property>
+	</bean>
+
+    <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="hostName" value="${redis.host}" />
+        <property name="port" value="${redis.port}" />
+        <!-- <property name="password" value="${redis.password}" /> -->
+    </bean>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate" >
+        <property name="connectionFactory">
+            <ref bean="connectionFactory"/>
+        </property>
+    </bean>
+	
+	<bean id="urlDao" class="com.eyougo.rollcrawler.dao.RedisUrlDao">
+		<property name="redisTemplate" ref="redisTemplate" />
+	</bean>
+	
+	<bean id="urlParser" class="com.eyougo.rollcrawler.parser.DefaultUrlParser">
+	</bean>
+	
+	<bean id="urlCrawlerTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="${urlCrawlerTaskExcutor.corePoolSize}" />
+		<property name="maxPoolSize" value="${urlCrawlerTaskExcutor.maxPoolSize}" />
+		<property name="queueCapacity" value="0" />
+	</bean>
+
+    <bean id="crawlerManager" class="com.eyougo.rollcrawler.manage.CrawlerManager" init-method="init">
+        <property name="urlDao" ref="urlDao" />
+        <property name="urlParser" ref="urlParser" />
+        <property name="urlCrawlerTaskExecutor" ref="urlCrawlerTaskExecutor" />
+    </bean>
+</beans>
