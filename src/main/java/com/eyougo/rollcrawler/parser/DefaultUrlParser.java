@@ -3,6 +3,8 @@ package com.eyougo.rollcrawler.parser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.eyougo.rollcrawler.util.HttpClientUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -84,6 +86,12 @@ public class DefaultUrlParser implements UrlParser{
 
     public static String getHost(String url) {
         HttpGet httpGet= new HttpGet(url);
-        return httpGet.getURI().getHost();
+        String host = httpGet.getURI().getHost().toLowerCase();
+        Pattern pattern = Pattern.compile("[^\\.]+(\\.com\\.cn|\\.net\\.cn|\\.org\\.cn|\\.gov\\.cn|\\.com|\\.net|\\.cn|\\.org|\\.cc|\\.me|\\.tel|\\.mobi|\\.asia|\\.biz|\\.info|\\.name|\\.tv|\\.hk|\\.公司|\\.中国|\\.网络)");
+        Matcher matcher = pattern.matcher(host);
+        while (matcher.find()) {
+            return matcher.group();
+        }
+        return "";
     }
 }

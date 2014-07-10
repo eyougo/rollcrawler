@@ -37,6 +37,9 @@ public class UrlCrawlerTask implements Runnable {
 
         String host = urlParser.getUrlHost(url);
         for (String childUrl : childUrls) {
+            if (!CrawlerManager.CRAWLER_ON) {
+                return;
+            }
             if (StringUtils.equalsIgnoreCase(childUrl, url)) {
                 continue;
             }
