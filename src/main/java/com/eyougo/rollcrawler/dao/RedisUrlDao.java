@@ -30,7 +30,7 @@ public class RedisUrlDao implements UrlDao{
             public Object execute(RedisOperations operations) throws DataAccessException {
                 operations.multi();
                 operations.opsForSet().add(URLSET_KEY, url);
-                operations.opsForHash().increment(URLCOUNT_KEY, DefaultUrlParser.getHost(url), 1);
+                operations.opsForHash().increment(URLCOUNT_KEY, DefaultUrlParser.getTopDomain(url), 1);
                 operations.exec();
                 return null;
             }
@@ -122,7 +122,7 @@ public class RedisUrlDao implements UrlDao{
 
     @Override
     public long getHostCount(String url) {
-        return NumberUtils.toLong(ObjectUtils.toString(redisTemplate.opsForHash().get(URLCOUNT_KEY, DefaultUrlParser.getHost(url))));
+        return NumberUtils.toLong(ObjectUtils.toString(redisTemplate.opsForHash().get(URLCOUNT_KEY, DefaultUrlParser.getTopDomain(url))));
     }
 
     public void setRedisTemplate(StringRedisTemplate redisTemplate) {

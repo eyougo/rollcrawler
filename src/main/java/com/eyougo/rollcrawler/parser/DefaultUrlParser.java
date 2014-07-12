@@ -84,7 +84,7 @@ public class DefaultUrlParser implements UrlParser{
         return getHost(url);
     }
 
-    public static String getHost(String url) {
+    public static String getTopDomain(String url){
         HttpGet httpGet= new HttpGet(url);
         String host = httpGet.getURI().getHost().toLowerCase();
         Pattern pattern = Pattern.compile("[^\\.]+(\\.com\\.cn|\\.net\\.cn|\\.org\\.cn|\\.gov\\.cn|\\.com|\\.net|\\.cn|\\.org|\\.cc|\\.me|\\.tel|\\.mobi|\\.asia|\\.biz|\\.info|\\.name|\\.tv|\\.hk|\\.公司|\\.中国|\\.网络)");
@@ -93,5 +93,10 @@ public class DefaultUrlParser implements UrlParser{
             return matcher.group();
         }
         return "";
+    }
+
+    public static String getHost(String url) {
+        HttpGet httpGet= new HttpGet(url);
+        return httpGet.getURI().getHost();
     }
 }

@@ -3,6 +3,7 @@ package com.eyougo.rollcrawler.manage;
 import com.eyougo.rollcrawler.dao.UrlDao;
 import com.eyougo.rollcrawler.parser.UrlParser;
 import com.eyougo.rollcrawler.task.UrlCrawlerTask;
+import com.eyougo.rollcrawler.task.UrlHostCrawlerTask;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,7 +47,7 @@ public class CrawlerManager {
     }
 
     public void start(String seedUrl) {
-        crawlerThread = new CrawlerThread();
+        crawlerThread = new CrawlerHostThread();
         crawlerThread.setDaemon(true);
         CRAWLER_ON = true;
         urlDao.addWaitParse(seedUrl, 0);
@@ -92,6 +93,36 @@ public class CrawlerManager {
                     }
                 } else {
                     UrlCrawlerTask crawlerTask = new UrlCrawlerTask(url.getLeft(),
+                            url.getRight().intValue(),
+                            urlParser, urlDao);
+                    try {
+                        urlCrawlerTaskExecutor.execute(crawlerTask);
+                        urlDao.removeFirstWaitParse();
+                    } catch (RejectedExecutionException e) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e1) {
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private class CrawlerHostThread extends Thread {
+        @Override
+        public void run() {
+            while (CRAWLER_ON) {
+                Pair<String, Double> url = urlDao.getFirstWaitParse();
+                if (url == null) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+
+                    }
+                } else {
+                    UrlHostCrawlerTask crawlerTask = new UrlHostCrawlerTask(url.getLeft(),
                             url.getRight().intValue(),
                             urlParser, urlDao);
                     try {
