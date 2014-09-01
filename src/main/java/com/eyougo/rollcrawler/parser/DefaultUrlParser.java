@@ -54,9 +54,10 @@ public class DefaultUrlParser implements UrlParser{
 
 	@Override
 	public boolean isValidUrl(String url) {
-		HttpGet httpGet= new HttpGet(url);
 		HttpEntity entity = null;
-		try {
+        HttpGet httpGet= null;
+        try {
+            httpGet= new HttpGet(url);
 			HttpResponse response = httpClient.execute(httpGet);
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				String contentType = response.getLastHeader(HttpHeaders.CONTENT_TYPE).getValue();
@@ -75,7 +76,9 @@ public class DefaultUrlParser implements UrlParser{
 				EntityUtils.consume(entity);
 			} catch (IOException e) {
 			}
-			httpGet.abort();
+            if (httpGet != null) {
+                httpGet.abort();
+            }
 		}
 		return false;
 	}
@@ -85,18 +88,31 @@ public class DefaultUrlParser implements UrlParser{
     }
 
     public static String getTopDomain(String url){
-        HttpGet httpGet= new HttpGet(url);
-        String host = httpGet.getURI().getHost().toLowerCase();
-        Pattern pattern = Pattern.compile("[^\\.]+(\\.com\\.cn|\\.net\\.cn|\\.org\\.cn|\\.gov\\.cn|\\.com|\\.net|\\.cn|\\.org|\\.cc|\\.me|\\.tel|\\.mobi|\\.asia|\\.biz|\\.info|\\.name|\\.tv|\\.hk|\\.公司|\\.中国|\\.网络)");
-        Matcher matcher = pattern.matcher(host);
-        while (matcher.find()) {
-            return matcher.group();
+        try {
+            HttpGet httpGet = new HttpGet(url);
+            String host = httpGet.getURI().getHost().toLowerCase();
+            Pattern pattern = Pattern.compile("[^\\.]+(\\.com\\.cn|\\.net\\.cn|\\.org\\.cn|\\.gov\\.cn|\\.com|\\.net|\\.cn|\\.org|\\.cc|\\.me|\\.tel|\\.mobi|\\.asia|\\.biz|\\.info|\\.name|\\.tv|\\.hk|\\.公司|\\.中国|\\.网络)");
+            Matcher matcher = pattern.matcher(host);
+            while (matcher.find()) {
+                return matcher.group();
+            }
+            return "";
+        }catch (Exception e){
+            return "";
         }
-        return "";
     }
 
     public static String getHost(String url) {
-        HttpGet httpGet= new HttpGet(url);
-        return httpGet.getURI().getHost();
+        try {
+
+            HttpGet httpGet= new HttpGet(url);
+            return httpGet.getURI().getScheme()+ "://" + httpGet.getURI().getHost();
+        }catch (Exception e){
+            return "";
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getHost("http://www.asdfsdf.com/asdf"));
     }
 }

@@ -32,7 +32,7 @@ public class CrawlerManager {
 
     public static final int PARSE_RANK_MAX = 2;
 
-    public static final int SAME_DOMAIN_MAX = 50;
+    public static final int SAME_DOMAIN_MAX = 5;
 
     public static volatile boolean CRAWLER_ON = true;
 
