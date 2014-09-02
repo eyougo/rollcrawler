@@ -23,15 +23,11 @@ public interface UrlDao {
 
     Set<String> waitParseUrls();
 
-    void removeLastWaitParse();
-
     void removeFirstWaitParse();
 
     void clearWaitParse();
 
     Pair<String,Double> getFirstWaitParse();
-
-    Pair<String,Double> getLastWaitParse();
 
     Boolean hasAddedWaitParse(String url);
 

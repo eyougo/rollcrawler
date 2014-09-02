@@ -64,12 +64,6 @@ public class RedisUrlDao implements UrlDao{
     }
 
     @Override
-    public void removeLastWaitParse() {
-        Set<String> set = redisTemplate.opsForZSet().reverseRange(WAITPARSE_URLSET_KEY, 0, 1);
-        redisTemplate.opsForZSet().remove(WAITPARSE_URLSET_KEY, set.toArray());
-    }
-
-    @Override
     public void removeFirstWaitParse() {
         Set<String> set = redisTemplate.opsForZSet().range(WAITPARSE_URLSET_KEY, 0, 1);
         redisTemplate.opsForZSet().remove(WAITPARSE_URLSET_KEY, set.toArray());
@@ -83,16 +77,6 @@ public class RedisUrlDao implements UrlDao{
     @Override
     public Pair<String, Double> getFirstWaitParse() {
         Set<ZSetOperations.TypedTuple<String>> set = redisTemplate.opsForZSet().rangeWithScores(WAITPARSE_URLSET_KEY, 0 ,1);
-        for (ZSetOperations.TypedTuple<String> tuple : set) {
-            Pair<String, Double> pair = new ImmutablePair<String, Double>(tuple.getValue(), tuple.getScore());
-            return pair;
-        }
-        return null;
-    }
-
-    @Override
-    public Pair<String, Double> getLastWaitParse() {
-        Set<ZSetOperations.TypedTuple<String>> set = redisTemplate.opsForZSet().reverseRangeWithScores(WAITPARSE_URLSET_KEY, 0, 1);
         for (ZSetOperations.TypedTuple<String> tuple : set) {
             Pair<String, Double> pair = new ImmutablePair<String, Double>(tuple.getValue(), tuple.getScore());
             return pair;

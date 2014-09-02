@@ -114,26 +114,25 @@ public class CrawlerManager {
         @Override
         public void run() {
             while (CRAWLER_ON) {
-                Pair<String, Double> url = urlDao.getFirstWaitParse();
-                if (url == null) {
+                try {
+                    Pair<String, Double> url = urlDao.getFirstWaitParse();
+                    if (url == null) {
+                        Thread.sleep(1000);
+                    } else {
+                        UrlHostCrawlerTask crawlerTask = new UrlHostCrawlerTask(url.getLeft(),
+                                url.getRight().intValue(),
+                                urlParser, urlDao);
+                        try {
+                            urlCrawlerTaskExecutor.execute(crawlerTask);
+                            urlDao.removeFirstWaitParse();
+                        } catch (RejectedExecutionException e) {
+                            Thread.sleep(1000);
+                        }
+                    }
+                }catch (Exception e){
                     try {
                         Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-
-                    }
-                } else {
-                    UrlHostCrawlerTask crawlerTask = new UrlHostCrawlerTask(url.getLeft(),
-                            url.getRight().intValue(),
-                            urlParser, urlDao);
-                    try {
-                        urlCrawlerTaskExecutor.execute(crawlerTask);
-                        urlDao.removeFirstWaitParse();
-                    } catch (RejectedExecutionException e) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e1) {
-
-                        }
+                    } catch (InterruptedException e1) {
                     }
                 }
             }
