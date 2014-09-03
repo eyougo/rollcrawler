@@ -4,6 +4,7 @@ import com.eyougo.rollcrawler.dao.UrlDao;
 import com.eyougo.rollcrawler.parser.UrlParser;
 import com.eyougo.rollcrawler.task.UrlCrawlerTask;
 import com.eyougo.rollcrawler.task.UrlHostCrawlerTask;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,10 +48,12 @@ public class CrawlerManager {
     }
 
     public void start(String seedUrl) {
+        if (StringUtils.isNotEmpty(seedUrl)){
+            urlDao.addWaitParse(seedUrl, 0);
+        }
         crawlerThread = new CrawlerHostThread();
         crawlerThread.setDaemon(true);
         CRAWLER_ON = true;
-        urlDao.addWaitParse(seedUrl, 0);
         crawlerThread.start();
     }
 
