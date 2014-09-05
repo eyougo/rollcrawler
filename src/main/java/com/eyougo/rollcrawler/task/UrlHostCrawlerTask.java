@@ -77,11 +77,11 @@ public class UrlHostCrawlerTask extends UrlCrawlerTask{
                     }
 
                     int childRank = 0;
-                    if (StringUtils.equalsIgnoreCase(childDomain, domain)) {
+                    if (StringUtils.equalsIgnoreCase(childHost, host)) {
+                        continue;//直接跳过
+                    }else if (StringUtils.equalsIgnoreCase(childDomain, domain)) {
                         childRank = this.rank + 1;
-                    } else if (StringUtils.equalsIgnoreCase(childHost, host)) {
-                        childRank = this.rank + 2;
-                    }//host都相同的直接+2，减少爬虫层次
+                    }
 
                     if (childRank > CrawlerManager.PARSE_RANK_MAX) {
                         continue;

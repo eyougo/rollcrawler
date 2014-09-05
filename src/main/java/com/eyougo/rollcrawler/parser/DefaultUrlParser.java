@@ -88,13 +88,22 @@ public class DefaultUrlParser implements UrlParser{
     }
 
     public static String getTopDomain(String url){
+        String domainSuffix = "(\\.com\\.cn|\\.net\\.cn|\\.org\\.cn|\\.gov\\.cn|\\.com|\\.net|\\.cn|\\.org|\\.cc|\\.me|\\.tel|\\.mobi|\\.asia|\\.biz|\\.info|\\.name|\\.tv|\\.hk|\\.公司|\\.中国|\\.网络)";
         try {
             HttpGet httpGet = new HttpGet(url);
             String host = httpGet.getURI().getHost().toLowerCase();
-            Pattern pattern = Pattern.compile("[^\\.]+(\\.com\\.cn|\\.net\\.cn|\\.org\\.cn|\\.gov\\.cn|\\.com|\\.net|\\.cn|\\.org|\\.cc|\\.me|\\.tel|\\.mobi|\\.asia|\\.biz|\\.info|\\.name|\\.tv|\\.hk|\\.公司|\\.中国|\\.网络)");
+            Pattern pattern = Pattern.compile("[^\\.]+" + domainSuffix +
+                    "(?![^\\.]+" + domainSuffix +")");
+
             Matcher matcher = pattern.matcher(host);
+
+            List<String> findList = new ArrayList<String>();
+
             while (matcher.find()) {
-                return matcher.group();
+                findList.add(matcher.group());
+            }
+            if (findList.size() > 0){
+                return findList.get(findList.size() -1);
             }
             return "";
         }catch (Exception e){
@@ -113,6 +122,6 @@ public class DefaultUrlParser implements UrlParser{
     }
 
     public static void main(String[] args) {
-        System.out.println(getHost("http://www.asdfsdf.com/asdf"));
+        System.out.println(getTopDomain("http://haidian.cn2che.com/sellcarinfo_1820501.html"));
     }
 }
