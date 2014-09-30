@@ -35,12 +35,6 @@ public class ManageController {
         return "redirect:/manage/index";
     }
 
-    @RequestMapping("/clear")
-    public String clear() {
-        crawlerManager.clear();
-        return "redirect:/manage/index";
-    }
-
     @RequestMapping("/crawler")
     @ResponseBody
     public String crawler() {
